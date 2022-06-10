@@ -19,7 +19,7 @@ function checksExistsUserAccount(request, response, next) {
 
   //(user) o parentese é opcional
   // => { validação1} para uma unica validação não é preciso ter as chaves e pode ocorrer erros se houver
-  const user = users.find((user) => user.username === username)
+  const user = users.find(user => user.username === username);
 
   //Validando o usuário
   if (!user) {
@@ -33,6 +33,7 @@ function checksExistsUserAccount(request, response, next) {
 }
 
 app.post('/users', (request, response) => {
+
   const { name, username } = request.body;
 
   const usersAlredyExists = users.some(
@@ -40,7 +41,7 @@ app.post('/users', (request, response) => {
   )
   if (usersAlredyExists) {
     return response.status(400).json({
-      erro: "User already exists "
+      error: "User already exists "
     })
   }
 
@@ -51,10 +52,14 @@ app.post('/users', (request, response) => {
     name,
     username,
     todos: []
+
   });
-  return response.status(201).send();
+
+  const user = users.find((user) => user.username === username);
+  return response.status(201).json(user);
 
 });
+
 
 
 
@@ -66,6 +71,7 @@ app.get('/todos', checksExistsUserAccount, (request, response) => {
 
 
 });
+
 
 app.post('/todos', checksExistsUserAccount, (request, response) => {
 
@@ -84,7 +90,7 @@ app.post('/todos', checksExistsUserAccount, (request, response) => {
 
   user.todos.push(todoOperation);
 
-  return response.status(201).send();
+  return response.status(201).send(todoOperation);
 
 });
 
@@ -97,6 +103,9 @@ app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
   const { id } = request.params;
 
   const todo = user.todos.find((todo) => todo.id === id);
+  if (!todo) {
+    return response.status(404).json({ error: "Not found todo" })
+  }
 
 
   todo.title = title;
@@ -110,13 +119,17 @@ app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
 app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
   const { user } = request;
 
-  const { done } = request.body;
+  // const { done } = request.body;
 
   const { id } = request.params;
 
   const todo = user.todos.find((todo) => todo.id === id);
 
-  todo.done = done;
+  if (!todo) {
+    return response.status(404).json({ error: "Not found" })
+  }
+
+  todo.done = true;
 
   return response.json(todo);
 
@@ -124,7 +137,22 @@ app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
 });
 
 app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
-  // Complete aqui
+
+  const { user } = request;
+
+  const { id } = request.params;
+
+  const todo = user.todos.find((todo) => todo.id === id);
+
+  if (!todo) {
+    return response.status(404).json({ error: "Not found" })
+  }
+
+  user.todos.pop(todo);
+
+  return response.status(204).json(user.todos);
+
+
 });
 
 module.exports = app;

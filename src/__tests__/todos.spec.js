@@ -4,7 +4,7 @@ const { validate } = require('uuid');
 const app = require('../');
 
 describe('Todos', () => {
-  it("should be able to list all user's todo", async () => {
+  it("1-should be able to list all user's todo", async () => {
     const userResponse = await request(app)
       .post('/users')
       .send({
@@ -33,7 +33,7 @@ describe('Todos', () => {
     )
   });
 
-  it('should be able to create a new todo', async () => {
+  it('2-should be able to create a new todo', async () => {
     const userResponse = await request(app)
       .post('/users')
       .send({
@@ -61,7 +61,7 @@ describe('Todos', () => {
     expect(response.body.created_at).toBeTruthy();
   });
 
-  it('should be able to update a todo', async () => {
+  it('3-should be able to update a todo', async () => {
     const userResponse = await request(app)
       .post('/users')
       .send({
@@ -96,19 +96,19 @@ describe('Todos', () => {
     const getAllTodosResponse = await request(app)
       .get((`/todos/`))
       .set('username', userResponse.body.username);
-    
+
     expect(
       getAllTodosResponse.body.find(
-        (todo)=>todo.id === todoResponse.body.id
+        (todo) => todo.id === todoResponse.body.id
       ))
-    .toMatchObject({
-      title: 'update title',
-      deadline: todoDate.toISOString(),
-      done: false
-    });
+      .toMatchObject({
+        title: 'update title',
+        deadline: todoDate.toISOString(),
+        done: false
+      });
   });
 
-  it('should not be able to update a non existing todo', async () => {
+  it('4-should not be able to update a non existing todo', async () => {
     const userResponse = await request(app)
       .post('/users')
       .send({
@@ -130,7 +130,7 @@ describe('Todos', () => {
     expect(response.body.error).toBeTruthy();
   });
 
-  it('should be able to mark a todo as done', async () => {
+  it('5-should be able to mark a todo as done', async () => {
     const userResponse = await request(app)
       .post('/users')
       .send({
@@ -158,7 +158,7 @@ describe('Todos', () => {
     });
   });
 
-  it('should not be able to mark a non existing todo as done', async () => {
+  it('6-should not be able to mark a non existing todo as done', async () => {
     const userResponse = await request(app)
       .post('/users')
       .send({
@@ -174,7 +174,7 @@ describe('Todos', () => {
     expect(response.body.error).toBeTruthy();
   });
 
-  it('should be able to delete a todo', async () => {
+  it('7-should be able to delete a todo', async () => {
     const userResponse = await request(app)
       .post('/users')
       .send({
@@ -204,7 +204,7 @@ describe('Todos', () => {
     expect(listResponse.body).toEqual([]);
   });
 
-  it('should not be able to delete a non existing todo', async () => {
+  it('8-should not be able to delete a non existing todo', async () => {
     const userResponse = await request(app)
       .post('/users')
       .send({
